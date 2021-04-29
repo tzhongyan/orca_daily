@@ -73,6 +73,7 @@ autom4te.cache
 /compile
 /config.guess
 /config.h.in
+/config.h.in~
 /config.log
 /config.status
 /config.sub
@@ -86,6 +87,7 @@ autom4te.cache
 
 # https://www.gnu.org/software/libtool/
 
+libtool
 /ltmain.sh
 
 # http://www.gnu.org/software/texinfo
