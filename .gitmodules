@@ -1,0 +1,3 @@
+[submodule "lib/orca"]
+	path = lib/orca
+	url = git@github.com:cee-studio/orca.git
