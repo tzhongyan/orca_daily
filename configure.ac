@@ -14,6 +14,10 @@ AC_PROG_CC
 AC_PROG_CXX
 LT_INIT
 
+AC_SUBST(GITVERSION)
+AC_SUBST(GITTAG)
+AC_SUBST(GITBRANCH)
+
 # -----------------------------------------------------------------------
 # Checks for libraries
 # -----------------------------------------------------------------------
@@ -30,10 +34,10 @@ dnl Checks for header files.
 
 # Autoupdate added the next two lines to ensure that your configure
 # script's behavior did not change.  They are probably safe to remove.
-# AC_CHECK_INCLUDES_DEFAULT
+AC_CHECK_INCLUDES_DEFAULT
 AC_PROG_EGREP
 
-AC_CHECK_HEADERS([arpa/inet.h netdb.h netinet/in.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/poll.h sys/time.h sys/types.h pthread.h getopt.h iconv.h syslog.h unistd.h execinfo.h])
+AC_CHECK_HEADERS([stdlib.h string.h strings.h math.h sys/ioctl.h sys/param.h sys/socket.h sys/poll.h sys/time.h sys/types.h pthread.h getopt.h iconv.h syslog.h unistd.h execinfo.h])
 
 # -----------------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.
@@ -69,7 +73,7 @@ AC_CHECK_FUNCS([gettimeofday inet_ntoa memset select socket strerror strtol strt
 # check for operating system specialities.....
 # -----------------------------------------------------------------------
 CFLAGS="$CFLAGS -D_REENTRANT -D_THREAD_SAFE"
-CXXFLAGS="$CXXFLAGS `getconf LFS_CFLAGS` -lgcrypt -lgpg-error"
+CXXFLAGS="$CXXFLAGS `getconf LFS_CFLAGS` -lgpg-error"
 
 case $host_os in
 freebsd*)
@@ -82,9 +86,9 @@ linux*)
         alpha* | hppa* | i*86 | ia64* | m68* | mips* | powerpc* | sparc* | s390* | sh*)
                 lt_cv_deplibs_check_method=pass_all ;;
         esac
-        CFLAGS="$CFLAGS -Wall -DLINUX -DHAVE_SIN6_SCOPE_ID"
-        #CXXFLAGS="$CXXFLAGS -Wall -DLINUX -DHAVE_SIN6_SCOPE_ID"
-	CXXFLAGS="$CXXFLAGS -DLINUX -DHAVE_SIN6_SCOPE_ID -Wall -Wextra -Wformat=2"
+        CFLAGS="$CFLAGS -Wall -Wextra -DLINUX -DHAVE_SIN6_SCOPE_ID"
+	    CXXFLAGS="$CXXFLAGS -DLINUX -DHAVE_SIN6_SCOPE_ID -Wall -Wextra -Wformat=2"
+        LDFLAGS="$LDFLAGS -lm"
         thread_LIBS="-lpthread"
         ;;
 solaris*)
@@ -100,6 +104,27 @@ darwin*)
         ;;
 esac
 AC_SUBST(thread_LIBS)
+
+dnl Check for libcurl required by orca
+AH_TEMPLATE(HAVE_LIBCURL, [libcurl library present])
+AC_CHECK_LIB(curl, curl_easy_getinfo, [
+    AC_DEFINE(HAVE_LIBCURL) HAVE_LIBCURL="true"
+    LDFLAGS="$LDFLAGS -lcurl"
+], [
+    AC_MSG_RESULT(no)
+    AC_MSG_ERROR(libcurl not found)
+])
+
+dnl Check for crypto ssl required by orca
+AH_TEMPLATE(HAVE_LIBCRYPTO, [openssl libcrypto library present])
+AC_CHECK_LIB(crypto, RAND_file_name, [
+    AC_DEFINE(HAVE_LIBCRYPTO) HAVE_LIBCRYPTO="true"
+    LDFLAGS="$LDFLAGS -lcrypto"
+], [
+    AC_MSG_RESULT(no)
+    AC_MSG_ERROR(crypto not found)
+])
+
 
 
 AC_CONFIG_FILES([Makefile src/Makefile])
