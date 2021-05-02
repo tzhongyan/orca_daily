@@ -5,22 +5,21 @@
 // #include <signal.h>
 
 #include "orca/discord.h"
-#include "crypto.h"
+#include "orca-pep.h"
 
 #define UNUSED(x) (void)(x)
 
 static Discord *client = NULL;
 
-void on_message_create(
-    Discord *client,
-    const DiscordUser *bot,
-    const DiscordMessage *msg)
+static void
+on_message_create(Discord *client, const DiscordUser *bot, const DiscordMessage *msg)
 {
     UNUSED(bot);
 
     // make sure bot doesn't echoes other bots
-    if (msg->author->bot)
-    return;
+    if (msg->author->bot) {
+        return;
+    }
 
     struct discord_create_message_params params = {
         .content = msg->content
@@ -39,17 +38,19 @@ void on_message_create(
     discord_create_message(client, msg->channel_id, &params, NULL);
 }
 
-void startup_message(Discord *client, const DiscordUser* bot)
-{
-    UNUSED(bot);
-    struct discord_create_message_params params = {
-        .content = "Hello!"
-    };
-    discord_create_message(client, msg->channel_id, &params, NULL);
-}
+// static void
+// startup_message(Discord *client, const DiscordUser* bot)
+// {
+//     UNUSED(bot);
+//     struct discord_create_message_params params = {
+//         .content = "Hello!"
+//     };
+//     discord_create_message(client, msg->channel_id, &params, NULL);
+// }
 
 
-// static void signal_handler(int signum)
+// static void
+// signal_handler(int signum)
 // {
 //     switch (signum) {
 //         case SIGINT:
@@ -69,7 +70,8 @@ void startup_message(Discord *client, const DiscordUser* bot)
 //     }
 // }
 
-// static void setup_signal_handlers(void)
+// static void
+// setup_signal_handlers(void)
 // {
 //     struct sigaction act;
 
@@ -83,7 +85,8 @@ void startup_message(Discord *client, const DiscordUser* bot)
 //     sigaction(SIGPIPE, &act, NULL);
 // }
 
-int main(int argc, char** argv)
+int
+main(int argc, char** argv)
 {
     const char *config_file = NULL;
 
@@ -103,7 +106,7 @@ int main(int argc, char** argv)
     assert(NULL != client);
 
     discord_set_on_message_create(client, &on_message_create);
-    discord_set_on_ready(client, &startup_message);
+    // discord_set_on_ready(client, &startup_message);
 
     discord_run(client);
 
